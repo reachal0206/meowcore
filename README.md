@@ -1,1 +1,1 @@
-# meowcore.github.io
+# meowcore
