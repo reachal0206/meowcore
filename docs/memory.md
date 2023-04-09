@@ -207,3 +207,16 @@ int munmap(void *start, size_t len)
   - len: 长度；
 
 - 输出：成功返回 0，失败返回-1;
+
+### 2.x brk
+
+```C
+uintptr_t brk(uintptr_t brk)
+```
+
+- 功能：修改数据段的大小；
+- 输入：
+
+  - brk: 指定待修改的地址；
+
+- 输出：成功返回 0，失败返回-1;
