@@ -2,6 +2,8 @@
 
 功能：内存管理模块；
 
+通常 M 模式的程序在第一次进入 S 模式之前会把零写入 satp 以禁用分页，然后 S 模式的程序在初始化页表以后会再次进行 satp 寄存器的写操作。
+
 - `satp`寄存器：RV64 中为 64 位读写寄存器，用于控制 S-Mode 下的地址翻译和保护
   ![satp寄存器最大长度为64](/docs/pics/satp%20XLEN=64.jpg)
   - PPN[43:0]:保存了一级页表的物理页号 PPN（物理地址/4KiB）；
@@ -26,7 +28,8 @@
 
 ```C
 typedef struct physical_page{
-
+  // int allocated;
+  // void* slab;
 
 }physical_page;
 ```
@@ -39,6 +42,7 @@ typedef struct physical_page{
 typedef struct vmspace{
   virt_addr pgtbl_addr; //页表基地址
   list vmregions; // 虚拟内存区域链表
+
 }vmspace;
 ```
 
@@ -57,7 +61,18 @@ typedef struct vmregion{
 }vmregion;
 ```
 
-虚拟地址空间
+### 1.x pmobject
+
+```C
+typedef struct pmobject{
+  paddr *start; // 起始地址
+  size_t size; // 地址大小
+  pmo_prop_t perm; // 权限
+  // 类型
+}pmobject;
+```
+
+物理内存对象
 
 ## 2.Functions
 
@@ -173,6 +188,34 @@ void fill_page_table(struct vmspace *vmspace, struct vmregion *vmregion)
 - 输入：
   - vmspace:
   - vmregion
+
+### 2.x map_range_in_pgtbl
+
+```C
+int map_range_in_pgtbl(struct vmspace *vmspace, vaddr_t va, paddr_t pa, size_t len, vmr_prot_t flags)
+```
+
+- 功能：填写 vmspace 内指定地址范围的页表
+- 输入：
+  - vmspace:
+  - va: 起始虚拟地址
+  - pa: 起始物理地址
+  - len: 地址范围大小
+  - flags:
+- 输出：返回页表映射是否成功添加
+
+### 2.x unmap_range_in_pgtbl
+
+```C
+int unmap_range_in_pgtbl(struct vmspace *vmspace, vaddr_t va, size_t len)
+```
+
+- 功能：删除页表映射
+- 输入：
+  - vmspace:
+  - va: 起始虚拟地址
+  - : 地址范围大小
+- 输出：返回页表映射是否成功添加
 
 ### 2.x mmap
 
