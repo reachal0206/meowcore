@@ -16,6 +16,10 @@
     - 10: Sv57
     - 11: Sv64(Reversed)
 
+MeowCore 中默认使用 Sv48 模式，每个页表页大小为 4KB，每个页表页中有 512 个页表项，每个页表项占 8 个字节。
+
+- `PTP_ENTRIES=512`
+
 ## x. Module
 
 ### x.1 buddy
@@ -35,6 +39,23 @@ typedef struct physical_page{
 ```
 
 4k 物理页
+
+### 1.x pte_t
+
+```C
+typedef union{
+  struct{
+    int is_valid: 1,
+        is_readable: 0,
+        is_writable: 0,
+        is_executable: 0,
+        user_mode: 0, // 禁止用户态访问页表
+
+  }table;
+}pte_t;
+```
+
+页表项
 
 ### 1.x vmspace
 
